@@ -1,0 +1,12 @@
+﻿version: 'dev-1.0'
+services:
+  api:
+    image: telecam-api
+    build:
+      context: .
+      dockerfile: Api/Dockerfile
+    ports:
+      - "5180:5180"
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
