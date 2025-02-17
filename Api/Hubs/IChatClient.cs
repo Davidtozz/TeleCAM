@@ -1,8 +1,11 @@
-namespace Api;
+namespace Api.Hubs;
 
 public interface IChatClient
 {
-    public Task Connect();
-    public Task SendMessage(string message, string? senderId = null, string? receiverId = null);
-    public Task Disconnect();
+    Task ReceiveMessage(string message, string sender);
+    Task MessageSent(string message);
+    Task UserConnected(string connectionId, string username);
+    Task UserConnected(string username);
+    Task UserDisconnected(string connectionId);
+    Task Typing(string connectionId);
 }

@@ -1,12 +1,27 @@
-﻿version: 'dev-1.0'
-services:
+﻿services:
+  db:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+        - "5431:5432"
+    volumes:
+      - "postgres-data:/var/lib/postgresql/data"
+
   api:
     image: telecam-api
     build:
-      context: .
-      dockerfile: Api/Dockerfile
+      context: ./Api
+      dockerfile: Dockerfile
     ports:
       - "5180:5180"
       - "8080:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - db
+volumes:
+  postgres-data:

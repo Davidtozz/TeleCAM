@@ -4,3 +4,4 @@ Api/bin
 Domain/obj/
 Domain/bin/
 .idea
+scripts.sh

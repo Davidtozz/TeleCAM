@@ -1,8 +1,10 @@
-class User {
-    readonly name: string;
-    readonly email: string;
-    constructor(name: string, email: string) {
+import { SetUsername } from "$lib/hub";
+
+export class User {
+    name: string = $state('');
+    /* email: string = $state(''); */
+    constructor(name: string) {
         this.name = name;
-        this.email = email;
+        /* this.email = email; */
     }
 }

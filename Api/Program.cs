@@ -1,6 +1,11 @@
 using System.Text;
+using Api.Data;
+using Api.Extensions;
+using Api.Hubs;
+using Api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
@@ -9,6 +14,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddScoped<IPasswordHasher<Domain.User>, PasswordHasher<Domain.User>>();
+builder.Services.AddScoped<IUserService, UserService>();
+
+builder.Services.AddDbContext<TelecamContext>(options =>
+{
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
 
 builder.Services.AddSwaggerGen(options =>
 {
@@ -21,7 +32,21 @@ builder.Services.AddSwaggerGen(options =>
     options.AddSignalRSwaggerGen();
 });
 
-builder.Services.AddSignalR();
+builder.Services.AddSignalR(options =>
+{
+    options.EnableDetailedErrors = true;
+});
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", p =>
+    {
+        p.WithOrigins("http://localhost:5180")
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials();
+    });
+});
+
 builder.Services.AddAuthentication(authenticationOptions =>
 {
     authenticationOptions.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -72,9 +97,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors("AllowAll");
+app.MapHub<ChatHub>("chat");
 
-// Extension method
-//app.MapAllEndpoints();
+/* Looks for all endpoints in assembly, and maps them */
+app.MapAllEndpoints();
 
-app.MapGet("/", () => "Hello from TeleCAM API, hosted on Azure!");
 app.Run();

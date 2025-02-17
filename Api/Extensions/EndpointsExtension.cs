@@ -1,8 +1,9 @@
-using Npgsql.Replication;
-using Api;
 using System.Reflection;
+using Api.Endpoints;
 
 // This class is used to map all endpoints in the application, in a way that is more maintainable and scalable.
+
+namespace Api.Extensions;
 
 public static class EndpointExtensions
 {

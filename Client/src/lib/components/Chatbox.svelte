@@ -2,7 +2,6 @@
   import type { Contact } from "$lib/state/chat.svelte";
   import MessageItem from "$lib/components/MessageItem.svelte";
 
-
   const { selectedContact }: {selectedContact: Contact} = $props();
 
   let currentMessage = $state('');
@@ -20,6 +19,9 @@
                 <div class="font-regular text-lg font-sans">
                     {selectedContact.name}
                 </div>
+                <h1>
+                    {selectedContact.status.toUpperCase()}
+                </h1>
             </header>
             <!-- Messages -->
             <main class="flex flex-col h-full overflow-x-auto mb-4">
@@ -49,9 +51,9 @@
                             if (e.key === 'Enter') {
                                 selectedContact.addTextMessage(currentMessage, true);
                                 currentMessage = '';
-                                e.currentTarget.value = '';
+                                e.currentTarget!.value = '';
                             }                            
-                        }}
+                          }}
                         type="text"  class="flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-4 h-10" />
                         <!-- svelte-ignore a11y_consider_explicit_label -->
                         <button class="absolute flex items-center justify-center h-full w-12 right-0 top-0 text-gray-400 hover:text-gray-600">

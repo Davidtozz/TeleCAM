@@ -1,4 +1,4 @@
-import { fakerIT } from "@faker-js/faker";
+import { faker, fakerIT } from "@faker-js/faker";
 
 export class Message {
     public text = $state<string>('');
@@ -26,13 +26,17 @@ export class Message {
     }
 }
 
-type Status = 'online' | 'offline' | 'away';
+export type Status = 'online' | 'offline' | 'away';
 
 export class Contact {
     public name = $state<string>('');
     public messages = $state<Message[]>([]);
-    private status = $state<Status>('offline');
-    public selected: boolean = $state<boolean>(false);
+    public status = $state<Status>('offline');
+    public typing = $state<boolean>(false);
+
+    constructor(name: string) {
+        this.name = name;
+    }
 
     public addTextMessage(text: string, sentByMe: boolean) {
         if(sentByMe) {
@@ -56,8 +60,9 @@ export class Contact {
     }
 
     static fromFakeData() {
-        const contact = new Contact();
-        contact.name = fakerIT.person.fullName();
+        const name = fakerIT.person.fullName();
+        const contact = new Contact(name);
+        contact.status = faker.helpers.arrayElement(['online', 'offline', 'away']);
         for (let i = 0; i < Math.random() * 10; i++) {
             contact.addMessage(Message.fromFakeData(contact));
         }
