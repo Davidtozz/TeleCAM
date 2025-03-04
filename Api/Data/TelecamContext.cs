@@ -1,4 +1,4 @@
-using Api.Models;
+using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Api.Data;

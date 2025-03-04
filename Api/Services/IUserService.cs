@@ -1,5 +1,5 @@
 namespace Api.Services;
-using Api.Models;
+using Domain.Entities;
 
 public interface IUserService
 {

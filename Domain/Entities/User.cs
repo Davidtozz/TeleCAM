@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Api.Models;
+namespace Domain.Entities;
 
 #pragma warning disable CS8618
 

@@ -1,4 +1,4 @@
-namespace Api.Models;
+namespace Domain.Entities;
 
 #pragma warning disable CS8618
 
