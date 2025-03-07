@@ -1,18 +1,19 @@
 using System.Collections.Concurrent;
-using Api.Models;
+using Domain.Entities;
 using Api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using SignalRSwaggerGen.Attributes;
 
 namespace Api.Hubs;
 
-[SignalRHub]
+[Authorize("user")]
 public class ChatHub : Hub<IChatClient>
 {
     public static readonly ConcurrentDictionary<string, string> Connections = new();
-    private readonly IUserService _userService;
+    private readonly IUserService<User> _userService;
 
-    public ChatHub(IUserService userService)
+    public ChatHub(IUserService<User> userService)
     {
         _userService = userService;
     }
@@ -78,5 +79,4 @@ public class ChatHub : Hub<IChatClient>
             await Clients.Client(receiverUsername).Typing(senderUsername);
         }
     }
-
 }

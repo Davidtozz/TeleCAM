@@ -8,13 +8,15 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Domain.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddScoped<IPasswordHasher<Domain.User>, PasswordHasher<Domain.User>>();
-builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+builder.Services.AddScoped<IUserService<User>, UserService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddDbContext<TelecamContext>(options =>
 {
@@ -57,15 +59,21 @@ builder.Services.AddAuthentication(authenticationOptions =>
     string jwtSecret = builder.Configuration["Jwt:Secret"]!;
     byte[] signingKey = Encoding.ASCII.GetBytes(jwtSecret);
     
+    jwtBearerOptions.Authority = "http://localhost:5180";
+    
     jwtBearerOptions.RequireHttpsMetadata = false;
     jwtBearerOptions.SaveToken = true;
     jwtBearerOptions.TokenValidationParameters = new TokenValidationParameters
     {
+
+        ValidateIssuer = false, //! has to be true in production
+        ValidateAudience = false, //! has to be true in production
         ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(signingKey),
-        ValidateIssuer = false,
-        ValidateAudience = false,
-        ValidateLifetime = true
+        ValidIssuer = builder.Configuration["Jwt:Issuer"], //dev: localhost
+        ValidAudience = builder.Configuration["Jwt:Audience"], //dev: localhost
+        ValidateLifetime = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)),
+        ClockSkew = TimeSpan.Zero
     };
     jwtBearerOptions.Events = new JwtBearerEvents
     {
@@ -81,10 +89,21 @@ builder.Services.AddAuthentication(authenticationOptions =>
         },
         OnMessageReceived = context =>
         {
-            Console.WriteLine("Message received from: " + context.Request.Path);
+            context.Token = context.Request.Cookies["x-auth-token"];
             return Task.CompletedTask;
-        }
+        },
     };
+});
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("user", policy =>
+    {
+        policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+        policy.RequireAuthenticatedUser();
+    });
+    
+    
 });
 
 var app = builder.Build();
@@ -98,6 +117,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapHub<ChatHub>("chat");
 
 /* Looks for all endpoints in assembly, and maps them */

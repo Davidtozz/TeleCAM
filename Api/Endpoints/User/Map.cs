@@ -1,4 +1,7 @@
+using Microsoft.AspNetCore.Authorization;
+
 namespace Api.Endpoints.User;
+
 
 public partial class UserEndpoint : IEndpoint
 {
@@ -7,7 +10,8 @@ public partial class UserEndpoint : IEndpoint
         var group = app.MapGroup("/user");
 
         group.MapGet("/{id}", GetUser);
-        group.MapPost("/", CreateUser);
+        group.MapPost("/register", Register);
+        group.MapPost("/login",  Login);
         group.MapDelete("/{id}", DeleteUser);
     }
 }

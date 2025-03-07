@@ -1,9 +1,9 @@
 namespace Api.Services;
 using Microsoft.EntityFrameworkCore;
 using Api.Data;
-using Api.Models;
+using Domain.Entities;
 
-public sealed class UserService : IUserService
+public sealed class UserService : IUserService<User>
 {
     private readonly TelecamContext _context;
 
@@ -35,7 +35,7 @@ public sealed class UserService : IUserService
     }
 
 
-    public async Task<bool> DeleteUserAsync(int id) 
+    public async Task<bool> DeleteUserAsync(Guid id) 
     {
         var user = await GetUserByIdAsync(id);
         if (user is null) {
@@ -46,7 +46,7 @@ public sealed class UserService : IUserService
         return true;
     }
 
-    public Task<User?> GetUserByIdAsync(int id)
+    public Task<User?> GetUserByIdAsync(Guid id)
     {
         return _context.Users.FirstOrDefaultAsync(u => u.Id == id);
     }
@@ -62,4 +62,16 @@ public sealed class UserService : IUserService
         } 
         return false;
     }
+}
+
+
+
+public interface IUserService<TUser> where TUser : class
+{
+    Task<TUser?> GetUserByIdAsync(Guid id);
+    Task<TUser?> GetUserByUsernameAsync(string username);
+    Task AddContactAsync(string username, Contact contact);
+    Task<ICollection<Contact>> GetContactsAsync(string username);
+    Task<bool> DeleteUserAsync(Guid id);
+    Task<bool> CreateUserAsync(User user);
 }

@@ -1,12 +1,21 @@
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+
 namespace Api.Endpoints.User;
 
 using Api.Services;
 using Microsoft.AspNetCore.Mvc;
-using Api.Models;
+using Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 public partial class UserEndpoint 
 {
-    private async Task<IResult> GetUser([FromRoute] int id, IUserService userService)
+    [Authorize("user")]
+    private async Task<IResult>  GetUser(
+        [FromRoute] Guid id, 
+        IUserService<User> userService
+        )
     {
         User? user = await userService.GetUserByIdAsync(id);
         return (user is null) ? Results.NotFound() : Results.Ok(user);
