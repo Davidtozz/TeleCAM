@@ -29,12 +29,6 @@ public partial class UserEndpoint
             Secure = false // set to true in production
         });
         
-        TokenResponse tokenResponse = new(
-            AccessToken: jwt,
-            RefreshToken: jwt
-        );
-
-        
-        return Results.Ok(tokenResponse);
+        return Results.Ok(new{jwt});
     }
 }

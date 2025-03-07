@@ -13,7 +13,7 @@ public partial class UserEndpoint {
     /// <param name="id"></param>
     /// <param name="userService"></param>
     /// <returns></returns>
-    public async Task<IResult> DeleteUser([FromRoute] Guid id, IUserService<User> userService)
+    public async Task<IResult> DeleteUser([FromRoute] int id, IUserService<User> userService)
     {
         var user = await userService.GetUserByIdAsync(id);
         if (user is null)

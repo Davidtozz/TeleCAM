@@ -35,7 +35,7 @@ public sealed class UserService : IUserService<User>
     }
 
 
-    public async Task<bool> DeleteUserAsync(Guid id) 
+    public async Task<bool> DeleteUserAsync(int id) 
     {
         var user = await GetUserByIdAsync(id);
         if (user is null) {
@@ -46,7 +46,7 @@ public sealed class UserService : IUserService<User>
         return true;
     }
 
-    public Task<User?> GetUserByIdAsync(Guid id)
+    public Task<User?> GetUserByIdAsync(int id)
     {
         return _context.Users.FirstOrDefaultAsync(u => u.Id == id);
     }
@@ -68,10 +68,10 @@ public sealed class UserService : IUserService<User>
 
 public interface IUserService<TUser> where TUser : class
 {
-    Task<TUser?> GetUserByIdAsync(Guid id);
+    Task<TUser?> GetUserByIdAsync(int id);
     Task<TUser?> GetUserByUsernameAsync(string username);
     Task AddContactAsync(string username, Contact contact);
     Task<ICollection<Contact>> GetContactsAsync(string username);
-    Task<bool> DeleteUserAsync(Guid id);
+    Task<bool> DeleteUserAsync(int id);
     Task<bool> CreateUserAsync(User user);
 }
