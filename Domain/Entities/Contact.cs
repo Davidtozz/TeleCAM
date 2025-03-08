@@ -4,10 +4,10 @@ namespace Domain.Entities;
 
 public class Contact
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
     public string Name { get; set; }
     public string Status { get; set; }
-    public int UserId { get; set; }
+    public Guid UserId { get; set; }
     public virtual User User { get; set; }
     public ICollection<Message> Messages { get; set; }
 }

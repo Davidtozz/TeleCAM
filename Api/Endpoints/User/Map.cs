@@ -13,5 +13,6 @@ public partial class UserEndpoint : IEndpoint
         group.MapPost("/register", Register);
         group.MapPost("/login",  Login);
         group.MapDelete("/{id}", DeleteUser);
+        group.MapPost("/refresh", Refresh);
     }
 }

@@ -1,30 +1,26 @@
-using Microsoft.IdentityModel.Tokens;
-
 namespace Api.Endpoints.User;
 
-using Api.DTOs;
+using Api.Data;
 using Api.Services;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 
-public partial class UserEndpoint 
+public partial class UserEndpoint
 {
-
-    private async Task<IResult> Login(
-        [FromBody] LoginDto formData,
-        IAuthService authService,
-        IPasswordHasher<User> passwordHasher,
-        ITokenService _tokenService,
-        HttpContext ctx)
+    [AllowAnonymous]
+    public async Task<IResult> Refresh(
+        HttpContext ctx,
+        IAuthService authService) 
     {
-        TokenResponseDto? tokenResponse = await authService.LoginAsync(formData);
-        if (tokenResponse is null) {
-            return Results.BadRequest(new {
-                message = "Username or password is incorrect."
-            });
+        var refreshToken = ctx.Request.Cookies["x-refresh-token"];
+        if (string.IsNullOrEmpty(refreshToken)) {
+            return Results.BadRequest();
         }
-        
+
+        var tokenResponse = await authService.RefreshTokenAsync(refreshToken);
+        if (tokenResponse is null) {
+            return Results.BadRequest();
+        }
+
         ctx.Response.Cookies.Append("x-auth-token", tokenResponse.AccessToken, new CookieOptions()
         {
             HttpOnly = true,
@@ -38,7 +34,7 @@ public partial class UserEndpoint
             SameSite = SameSiteMode.Strict,
             Secure = false // set to true in production
         });
-        
+
         return Results.Ok(tokenResponse);
     }
 }

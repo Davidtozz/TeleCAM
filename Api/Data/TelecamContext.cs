@@ -16,11 +16,13 @@ public class TelecamContext : DbContext
         modelBuilder.Entity<User>().ToTable("Users");
         modelBuilder.Entity<Contact>().ToTable("Contacts");
         modelBuilder.Entity<Message>().ToTable("Messages");
+        modelBuilder.Entity<RefreshToken>().ToTable("RefreshTokens");
 
         base.OnModelCreating(modelBuilder);
     }
     public DbSet<User> Users { get; set; }
     public DbSet<Contact> Contacts { get; set; }
     public DbSet<Message> Messages { get; set; }
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
     
 }

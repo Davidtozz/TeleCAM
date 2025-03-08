@@ -13,7 +13,7 @@ public partial class UserEndpoint
 {
     [Authorize("user")]
     private async Task<IResult>  GetUser(
-        [FromRoute] int id, 
+        [FromRoute] Guid id, 
         IUserService<User> userService
         )
     {

@@ -16,20 +16,30 @@ public partial class UserEndpoint
         [FromBody] RegisterDto formData,
         IAuthService authService,
         IPasswordHasher<User> passwordHasher,
+        ITokenService _tokenService,
         HttpContext ctx)
     {
-        var jwt = await authService.RegisterAsync(formData);
-        if(jwt.IsNullOrEmpty()) {
-            // User already exists
-            return Results.BadRequest();
+        var tokenResponse = await authService.RegisterAsync(formData);
+        if(tokenResponse is null) {
+            return Results.BadRequest(new { message = "Registration failed. Username may already exist."});
         }   
+
         
-        ctx.Response.Cookies.Append("x-auth-token", jwt, new CookieOptions {
+        ctx.Response.Cookies.Append("x-auth-token", tokenResponse.AccessToken, new CookieOptions {
+            HttpOnly = true,
+            SameSite = SameSiteMode.Strict,
+            Secure = false
+        });
+        
+        ctx.Response.Cookies.Append("x-refresh-token", tokenResponse.RefreshToken, new CookieOptions {
             HttpOnly = true,
             SameSite = SameSiteMode.Strict,
             Secure = false
         });
 
-        return Results.Ok(new{formData.Username, jwt});
+        return Results.Ok(new {
+            Username = formData.Username, 
+            Tokens = tokenResponse
+        });
     }
 }
