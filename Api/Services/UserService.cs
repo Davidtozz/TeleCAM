@@ -73,8 +73,6 @@ public interface IUserService<TUser> where TUser : class
 {
     Task<TUser?> GetUserByIdAsync(Guid id);
     Task<TUser?> GetUserByUsernameAsync(string username);
-    Task AddContactAsync(string username, Contact contact);
-    Task<ICollection<Contact>> GetContactsAsync(string username);
     Task<bool> DeleteUserAsync(Guid id);
     Task<User?> CreateUserAsync(User user);
 }

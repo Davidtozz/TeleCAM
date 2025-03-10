@@ -31,8 +31,9 @@ public sealed class TokenService : ITokenService
     /// <returns>The generated JWT token.</returns>
     public string GenerateAccessToken(User user) {
         var claims = new Claim[]{
-            new (JwtRegisteredClaimNames.Sub, user.Username),
-            new(JwtRegisteredClaimNames.Email, user.Email),
+            new ("userId", user.Id.ToString()),
+            new ("name", user.Username),
+            new("email", user.Email),
         };
 
         //! dev only
@@ -41,7 +42,7 @@ public sealed class TokenService : ITokenService
             issuer: _configuration["Jwt:Issuer"],
             audience: _configuration["Jwt:Audience"],
             claims: claims,
-            expires: DateTime.Now.AddMinutes(5),
+            expires: DateTime.UtcNow.AddMinutes(5),
             signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
         );
 
@@ -71,7 +72,7 @@ public sealed class TokenService : ITokenService
 
     public async Task RemoveRefreshTokenAsync(RefreshToken token)
     {
-        _context.RefreshTokens.Remove(token);
+        _context.RefreshTokens.FromSqlInterpolated($"DELETE FROM RefreshTokens WHERE Id NOT IN ({token.Id})");
         await _context.SaveChangesAsync();
     }
 
