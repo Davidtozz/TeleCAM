@@ -18,17 +18,8 @@ public sealed class MessageService(TelecamContext context) : IMessageService
             Content = content,
             SentAt = DateTime.UtcNow
         };
-        recipient.Messages.Add(new Message
-        {
-            Id = Guid.NewGuid(),
-            Sender = sender,
-            Receiver = recipient.User,
-            Content = content,
-            SentAt = DateTime.UtcNow
-        });
-        _context.Entry(recipient).State = EntityState.Modified;
 
-        /* await _context.Messages.AddAsync(message); */
+        await _context.Messages.AddAsync(message);
         await _context.SaveChangesAsync();
 
         return message;

@@ -34,6 +34,12 @@ public sealed class ContactService : IContactService
     {
         return await _context.Contacts
             .Where(c => c.Id == contactId && c.User.Id == userId)
+            .Select(c => new Contact
+            {
+                Id = c.Id,
+                Name = c.Name,
+                User = c.User
+            })
             .FirstOrDefaultAsync();
     }
 
