@@ -16,17 +16,14 @@ namespace Api.Migrations
                 BEGIN
                     -- Delete all previous refresh tokens for this user, except the newly inserted one
                     DELETE FROM ""RefreshTokens"" 
-                    WHERE ""OwnerId"" = NEW.""OwnerId""
-                    AND ""Id"" != NEW.""Id"";
-                    
-                    -- Return the new record
+                    WHERE ""Id"" != NEW.""Id"";                    
                     RETURN NEW;
                 END;
                 $$ LANGUAGE plpgsql;
             ");
 
             migrationBuilder.Sql(@"
-                CREATE TRIGGER delete_old_refresh_tokens_trigger
+                CREATE OR REPLACE TRIGGER delete_old_refresh_tokens_trigger
                 AFTER INSERT ON ""RefreshTokens""
                 FOR EACH ROW
                 EXECUTE FUNCTION delete_old_refresh_tokens_fn();
