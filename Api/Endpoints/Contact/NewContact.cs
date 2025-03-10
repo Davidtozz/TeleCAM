@@ -17,7 +17,7 @@ public partial class ContactEndpoint
         ILogger<ContactEndpoint> logger,
         ClaimsPrincipal jwt)
     {          
-        User? user = await userService.GetUserByUsernameAsync(jwt.Identity?.Name!);
+        User? user = await userService.GetUserByUsernameAsync(jwt.FindFirstValue("name")!);
         if (user == null)
         {
             return Results.BadRequest("Invalid user");

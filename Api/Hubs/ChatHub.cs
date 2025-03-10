@@ -10,74 +10,53 @@ namespace Api.Hubs;
 [Authorize("user")]
 public class ChatHub : Hub<IChatClient>
 {
-    public static readonly ConcurrentDictionary<string, string> Connections = new();
     private readonly IUserService<User> _userService;
+    private readonly IContactService _contactService;
 
-    public ChatHub(IUserService<User> userService)
+    public ChatHub(IUserService<User> userService, IContactService contactService)
     {
         _userService = userService;
+        _contactService = contactService;
     }
 
     public override async Task OnConnectedAsync()
     {
-        if (Connections.TryGetValue(Context.ConnectionId, out var username))
-        {
-            var contacts = await _userService.GetContactsAsync(username);
-            foreach (var contact in contacts)
-            {
-                await Clients.User(contact.Name).UserConnected(username);
-            }
-        }
-    }
-
-    public override async Task OnDisconnectedAsync(Exception? exception)
-    {
-        if (Connections.TryRemove(Context.ConnectionId, out var username))
-        {
-            var contacts = await _userService.GetContactsAsync(username);
-            foreach (var contact in contacts)
-            {
-                await Clients.User(contact.Name).UserDisconnected(username);
-            }
-        }
-        await base.OnDisconnectedAsync(exception);
-    }
-
-    public async Task SetUsername(string username)
-    {
-        Connections[Context.ConnectionId] = username;
-        var contacts = await _userService.GetContactsAsync(username);
+        
+        string username = Context.User!.Identity!.Name!;
+        var contacts = await _contactService.GetContactsByUsernameAsync(username);
         foreach (var contact in contacts)
         {
             await Clients.User(contact.Name).UserConnected(username);
         }
+        
     }
 
-    public async Task AddContact(string contactName)
+    public override async Task OnDisconnectedAsync(Exception? exception)
     {
-        if (Connections.TryGetValue(Context.ConnectionId, out var username))
+        
+        string username = Context.User!.Identity!.Name!;
+        var contacts = await _contactService.GetContactsByUsernameAsync(username);
+        foreach (var contact in contacts)
         {
-            var contact = new Contact()
-            {
-                Name = contactName,
-                Status = "offline"
-            };
-            await _userService.AddContactAsync(username, contact);
+            await Clients.User(contact.Name).UserDisconnected(username);
         }
-
+        
+        await base.OnDisconnectedAsync(exception);
     }
+
+
     public async Task SendMessage(string message, string receiverUsername)
     {
-        if (Connections.TryGetValue(Context.ConnectionId, out var senderUsername))
+        /* if (Connections.TryGetValue(Context.ConnectionId, out var senderUsername))
         {
             await Clients.User(receiverUsername).ReceiveMessage(message, sender: senderUsername);
-        }
+        } */
     }
     
     public async Task Typing(string receiverUsername) {
-        if (Connections.TryGetValue(Context.ConnectionId, out var senderUsername)) {
+        /* if (Connections.TryGetValue(Context.ConnectionId, out var senderUsername)) {
             await Clients.Client(receiverUsername).Typing(senderUsername);
-        }
+        } */
     }
 }
 

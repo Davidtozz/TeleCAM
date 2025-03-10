@@ -25,8 +25,7 @@ public sealed class ContactService : IContactService
         await _context.Contacts.AddAsync(new Contact
         {
             Name = contact.Name,
-            User = user,
-            Status = "offline"
+            User = user
         });
         await _context.SaveChangesAsync();    
     }

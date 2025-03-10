@@ -68,15 +68,9 @@ public sealed class AuthService : IAuthService
             return null;
         }
 
-        if(savedRefreshToken.ExpiresOnUtc < DateTime.UtcNow) {
-            await _tokenService.RemoveRefreshTokenAsync(savedRefreshToken);
-            return null;
-        }
-
         var user = savedRefreshToken.User;
 
         var accessToken = _tokenService.GenerateAccessToken(user);
-        await _tokenService.RemoveRefreshTokenAsync(savedRefreshToken);
         var newRefreshToken = _tokenService.GenerateRefreshToken(user);
 
         return new TokenResponseDto {

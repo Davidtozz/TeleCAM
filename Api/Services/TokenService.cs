@@ -53,7 +53,6 @@ public sealed class TokenService : ITokenService
     {
         var refreshToken = new RefreshToken()
         {
-            OwnerId = user.Id,
             Token = GenerateRefreshToken(),
             ExpiresOnUtc = DateTime.UtcNow.AddDays(7),  
             User = user
