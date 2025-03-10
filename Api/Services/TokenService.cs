@@ -70,11 +70,7 @@ public sealed class TokenService : ITokenService
         return Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
     }
 
-    public async Task RemoveRefreshTokenAsync(RefreshToken token)
-    {
-        _context.RefreshTokens.FromSqlInterpolated($"DELETE FROM RefreshTokens WHERE Id NOT IN ({token.Id})");
-        await _context.SaveChangesAsync();
-    }
+
 
     public async Task<RefreshToken?> ValidateRefreshTokenAsync(string token)
     {
@@ -99,5 +95,4 @@ public interface ITokenService
     public RefreshToken GenerateRefreshToken(User user);
     public string GenerateRefreshToken();
     Task<RefreshToken?> ValidateRefreshTokenAsync(string token);
-    Task RemoveRefreshTokenAsync(RefreshToken token);
 }
