@@ -9,6 +9,7 @@ using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Api.Extensions;
 
 public partial class UserEndpoint 
 {
@@ -25,17 +26,7 @@ public partial class UserEndpoint
         }   
 
         
-        ctx.Response.Cookies.Append("x-auth-token", tokenResponse.AccessToken, new CookieOptions {
-            HttpOnly = true,
-            SameSite = SameSiteMode.Strict,
-            Secure = false
-        });
-        
-        ctx.Response.Cookies.Append("x-refresh-token", tokenResponse.RefreshToken, new CookieOptions {
-            HttpOnly = true,
-            SameSite = SameSiteMode.Strict,
-            Secure = false
-        });
+        ctx.SetTokenCookies(tokenResponse.AccessToken, tokenResponse.RefreshToken);
 
         return Results.Ok(new {
             Username = formData.Username, 

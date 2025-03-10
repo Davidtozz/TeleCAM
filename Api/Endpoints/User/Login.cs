@@ -7,6 +7,7 @@ using Api.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Domain.Entities;
+using Api.Extensions;
 
 public partial class UserEndpoint 
 {
@@ -25,19 +26,7 @@ public partial class UserEndpoint
             });
         }
         
-        ctx.Response.Cookies.Append("x-auth-token", tokenResponse.AccessToken, new CookieOptions()
-        {
-            HttpOnly = true,
-            SameSite = SameSiteMode.Strict,
-            Secure = false // set to true in production
-        });
-
-        ctx.Response.Cookies.Append("x-refresh-token", tokenResponse.RefreshToken, new CookieOptions()
-        {
-            HttpOnly = true,
-            SameSite = SameSiteMode.Strict,
-            Secure = false // set to true in production
-        });
+        ctx.SetTokenCookies(tokenResponse.AccessToken, tokenResponse.RefreshToken);
         
         return Results.Ok(tokenResponse);
     }
