@@ -27,6 +27,8 @@
 		"vite": "^6.0.0"
 	},
 	"dependencies": {
-		"@microsoft/signalr": "^8.0.7"
+		"@lucide/svelte": "^0.479.0",
+		"@microsoft/signalr": "^8.0.7",
+		"mode-watcher": "^0.5.1"
 	}
 }
