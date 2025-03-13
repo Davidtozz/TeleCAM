@@ -2,13 +2,14 @@
   import { Contact } from "$lib/state/chat.svelte";
 
 
-  let { contact }: {contact: Contact} = $props();
+  let { contact, onclick }: {contact: Contact, onclick: () => void} = $props();
 
 </script>
 
 <button 
-  class="flex flex-1 flex-row items-center hover:bg-gray-100 rounded-xl p-2 gap-x-2">
-  <div class={`flex items-center justify-center h-8 w-8 bg-200-white rounded-full`}>
+ onclick={onclick}
+  class="flex flex-1 flex-row items-center hover:bg-hover hoverdark:bg-dark-hover p-2 gap-x-2">
+  <div class={`flex items-center justify-center h-8 w-8 bg-blue-500 rounded-full`}>
     {contact.name.charAt(0).toUpperCase()}
   </div>
   <div class=" text-sm font-semibold">{contact.name}</div>

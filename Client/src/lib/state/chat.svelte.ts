@@ -40,9 +40,9 @@ export class Contact {
 
     public addTextMessage(text: string, sentByMe: boolean) {
         if(sentByMe) {
-            this.messages.push(new Message(text, "me"));
+            this.messages.unshift(new Message(text, "me"));
         } else {
-            this.messages.push(new Message(text, this));
+            this.messages.unshift(new Message(text, this));
         }
     }       
 
