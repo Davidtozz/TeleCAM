@@ -2,6 +2,7 @@
   import Chatbox from "$lib/components/Chatbox.svelte";
   import ContactItem from "$lib/components/ContactItem.svelte";
     import { Contact, contacts } from "$lib/state/chat.svelte";
+  import { modal } from "$lib/state/modal.svelte";
     import { 
         Menu, 
         MessageCircle, 
@@ -24,7 +25,19 @@
     onDestroy(()=>{
         contacts.length = 0;
     })
+
+    function handleEscapeKey(e: KeyboardEvent) {
+        if(e.key === "Escape") {
+            if(modal.state === "closed") {
+                selectedContact = null;
+            } else {
+                modal.close();
+            }
+        }
+    }
 </script>
+
+<svelte:body onkeydown={handleEscapeKey}/>
 
 <div class="flex h-screen antialiased" class:dark={$mode === "dark"}>
     <!-- sidebar -->

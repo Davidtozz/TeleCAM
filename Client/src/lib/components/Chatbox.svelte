@@ -2,12 +2,13 @@
   import type { Contact, Message } from "$lib/state/chat.svelte";
   import MessageItem from "$lib/components/MessageItem.svelte";
   import { Search, Phone, Info, EllipsisVertical, Paperclip } from "@lucide/svelte";
+  import Modal from "./Modal.svelte";
+  import UserInfo from "./UserInfo.svelte";
+  import { modal } from "$lib/state/modal.svelte";
 
   const { selectedContact }: {selectedContact: Contact | null} = $props();
 
   let currentMessage = $state('');
-
-
 
   function getMessagePosition(index: number): "single" | "first" | "middle" | "last" {
     if(!selectedContact) 
@@ -38,30 +39,32 @@
   }
 </script>
 
-<main class="flex-col md:flex md:flex-[4] hidden dark:bg-dark-primary bg-primary {!selectedContact && "justify-center items-center"}">
+<main 
+    class="flex-col md:flex md:flex-[4] hidden dark:bg-dark-primary bg-primary {!selectedContact && "justify-center items-center"}">
     {#if selectedContact}
     <!-- chat header -->
-        <div class="p-4 flex justify-between bg-primary text-white dark:bg-dark-secondary
-        border-2 border-l-0 border-primary dark:border-dark-primary 
-        ">
+        <div 
+        onclickcapture={() => modal.open()}
+        class="p-4 flex justify-between bg-primary text-white dark:bg-dark-secondary
+        border-2 border-l-0 border-primary dark:border-dark-primary cursor-pointer">
             <div class="flex flex-col">
                 <p class="font-medium text-dark-primary dark:text-primary">
                     {selectedContact?.name}
                 </p>
                 <small class="text-sidebar">Last seen recently </small>
             </div>
-            <div class="flex items-center gap-2">
-                <button class="hover:bg-hover dark:hover:bg-hover p-2 rounded-lg">
-                    <Search size={20} class="text-sidebar"/>
+            <div class="flex items-center gap-x-6">
+                <button class="hover:text-hover dark:text-dark-hover rounded-lg">
+                    <Search size={20} class="text-sidebar dark:hover:text-[#dcdcdc] hover:text-dark-hover"/>
                 </button>
-                <button class="hover:bg-hover dark:hover:bg-hover p-2 rounded-lg">
-                    <Phone size={20} class="text-sidebar"/>
+                <button class="hover:text-hover dark:text-dark-hover rounded-lg">
+                    <Phone size={20} class="text-sidebar dark:hover:text-[#dcdcdc] hover:text-dark-hover"/>
                 </button>
-                <button class="hover:bg-hover dark:hover:bg-hover p-2 rounded-lg">
-                    <Info size={20} class="text-sidebar"/>
+                <button class="hover:text-hover dark:text-dark-hover rounded-lg">
+                    <Info size={20} class="text-sidebar dark:hover:text-[#dcdcdc] hover:text-dark-hover"/>
                 </button>
-                <button class="hover:bg-hover dark:hover:bg-hover p-2 rounded-lg">
-                    <EllipsisVertical size={20} class="text-sidebar"/>
+                <button class="hover:text-hover dark:text-dark-hover rounded-lg">
+                    <EllipsisVertical size={20} class="text-sidebar dark:hover:text-[#dcdcdc] hover:text-dark-hover"/>
                 </button>
             </div>
         </div>
@@ -89,3 +92,7 @@
         </div>
     {/if}
 </main>
+
+<Modal>
+    <UserInfo {selectedContact}/>
+</Modal>

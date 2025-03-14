@@ -11,11 +11,11 @@
     function getRoundedStyle() {
         switch(position) {
             case "last":
-                return "rounded-lg " + ((message.sender === "me") ? "rounded-br-none" : "rounded-tr-none");
+                return "rounded-lg " + ((message.sender === "me") ? "rounded-br-none" : "rounded-bl-none");
             case "middle":
                 return (message.sender === "me") ? "rounded-l-lg" : "rounded-r-lg";
             case "first":
-                return "rounded-lg " + ((message.sender === "me") ? "rounded-tr-none" : "rounded-bl-none");
+                return "rounded-lg " + ((message.sender === "me") ? "rounded-tr-none" : "rounded-tl-none");
             default:
                 return "rounded-lg";
         }
@@ -26,7 +26,7 @@
             case "last":
                 return "pt-3";
             case "middle":
-                return "";
+                return "pt-[1px]";
             case "first":
                 return "pb-3";
             default:
@@ -34,14 +34,17 @@
         }
     }
 
-    const shadow = (() =>{
-        if(position === "middle") return "";
-        return "shadow-md"
-    })(); 
+    const shadow = "shadow-msg"; 
 
     let editMode = $state(false);
     const showAvatar = position === "single" || position === "first";
 </script>
+
+<style>
+    .shadow-msg {
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05), 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    }
+</style>
 
 <!-- TODO fix group styling to make it look more like Telegram's grouped messages -->
 <div class={`col-start-${isOwnMessage ? '6' : '1'} col-end-${isOwnMessage ? '13' : '8'}  ${getPaddingStyle()}`}>
@@ -54,7 +57,7 @@
             <!-- Placeholder for correct alignment -->
             <div class="w-10 flex-shrink-0"></div>
         {/if}
-        <div class={`relative ${isOwnMessage ? 'mr-3' : 'ml-3'} text-sm ${isOwnMessage ? 'bg-[#2b5278]' : `bg-[#182533]`} py-2 px-4 ${shadow} ${getRoundedStyle()}`}>
+        <div class={`relative ${isOwnMessage ? 'mr-3' : 'ml-3'} text-sm  ${isOwnMessage ? 'bg-accent dark:bg-[#2b5278]' : `bg-white dark:bg-[#182533]`} py-2 px-4 ${shadow} ${getRoundedStyle()}`}>
             <div>{message.text}</div>
         </div>
     </div>
