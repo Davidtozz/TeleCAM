@@ -1,5 +1,5 @@
 import { HubConnectionBuilder, LogLevel, HttpTransportType } from '@microsoft/signalr';
-import { contacts } from './state/chat.svelte';
+import { user } from '$lib/state/user.svelte';
 
 export const connection = new HubConnectionBuilder()
 .withUrl("http://localhost:5180/chat", {
@@ -42,7 +42,7 @@ export function SetUsername(username: string) {
 
 export function SendMessage(toContact: string, message: string) {
 
-    if(contacts.find(c => c.name === toContact) === undefined) {
+    if(user.contacts.find(c => c.name === toContact) === undefined) {
         console.error("Contact not found");
         return;
     }

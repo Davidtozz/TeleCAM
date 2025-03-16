@@ -69,5 +69,3 @@ export class Contact {
         return contact;
     }
 }
-
-export const contacts = $state<Contact[]>([]);

@@ -1,10 +1,8 @@
-import { SetUsername } from "$lib/hub";
+import type { Contact } from "./chat.svelte";
 
-export class User {
+class User {
     name: string = $state('');
-    /* email: string = $state(''); */
-    constructor(name: string) {
-        this.name = name;
-        /* this.email = email; */
-    }
+    contacts = $state<Contact[]>([]);
 }
+
+export const user = new User();

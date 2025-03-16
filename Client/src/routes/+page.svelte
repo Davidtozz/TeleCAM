@@ -1,9 +1,13 @@
 <script lang="ts">
-  import Chatbox from "$lib/components/Chatbox.svelte";
-  import ContactItem from "$lib/components/ContactItem.svelte";
-  import { connection, init } from "$lib/hub";
-    import { Contact, contacts } from "$lib/state/chat.svelte";
-  import { modal } from "$lib/state/modal.svelte";
+  import { goto } from "$app/navigation";
+  import { authService } from "$lib/api/services/auth-service.svelte";
+  import { contactService } from "$lib/api/services/contact-service";
+    import Chatbox from "$lib/components/Chatbox.svelte";
+    import ContactItem from "$lib/components/ContactItem.svelte";
+    import { connection, init } from "$lib/hub";
+    import { Contact } from "$lib/state/chat.svelte";
+    import { modal } from "$lib/state/modal.svelte";
+    import { user } from "$lib/state/user.svelte";
     import { 
         Menu, 
         MessageCircle, 
@@ -11,16 +15,18 @@
         Sun,
         Moon} from "@lucide/svelte";
     import { ModeWatcher, mode, toggleMode } from "mode-watcher";
-  import { onDestroy, onMount } from "svelte";
+    import { onDestroy, onMount } from "svelte";
 
     const DEFAULT_ICON_SIZE = 30;
 
     onMount(async ()=>{
-        await init();            
+        /* await init();   */          
 
-        if(import.meta.env.DEV) {
+        user.contacts = await contactService.getContacts();
+
+        if(import.meta.env.DEV && user.contacts.length === 0) {
             for(let i = 0; i < 20; i++){
-                contacts.push(Contact.fromFakeData());
+                user.contacts.push(Contact.fromFakeData());
             }
         } 
     })
@@ -28,7 +34,7 @@
     let selectedContact = $state<Contact | null>(null);
     
     onDestroy(()=>{
-        contacts.length = 0;
+        user.contacts = [];
     })
 
     function handleEscapeKey(e: KeyboardEvent) {
@@ -75,7 +81,7 @@
             <input class="rounded-full indent-3 border-none outline-none bg-secondary p-2 w-full" placeholder="Search"/>
         </div>
         <div class="flex flex-col hover:bg-secondary dark:hover:bg-dark-secondary ">
-            {#each contacts as contact}                 
+            {#each user.contacts as contact}                 
                 <ContactItem {contact} onclick={() => selectedContact = contact}/>                
             {/each}
         </div>        

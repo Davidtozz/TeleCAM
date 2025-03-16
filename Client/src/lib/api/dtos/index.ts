@@ -11,3 +11,10 @@ export type TokenResponseDto = {
     accessToken: string;
     refreshToken: string;
 }
+
+export type NewContactDto = {
+    name: string;
+    username?: string;
+    displayname?: string;
+    notes?: string;
+}
