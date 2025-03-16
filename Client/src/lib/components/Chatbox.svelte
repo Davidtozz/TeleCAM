@@ -1,42 +1,63 @@
 <script lang="ts">
-  import type { Contact, Message } from "$lib/state/chat.svelte";
-  import MessageItem from "$lib/components/MessageItem.svelte";
-  import { Search, Phone, Info, EllipsisVertical, Paperclip } from "@lucide/svelte";
-  import Modal from "./Modal.svelte";
-  import UserInfo from "./UserInfo.svelte";
-  import { modal } from "$lib/state/modal.svelte";
+    import type { Contact, Message } from "$lib/state/chat.svelte";
+    import MessageItem from "$lib/components/MessageItem.svelte";
+    import { Search, Phone, Info, EllipsisVertical, Paperclip } from "@lucide/svelte";
+    import Modal from "./Modal.svelte";
+    import UserInfo from "./modals/UserInfoModal.svelte";
+    import { modal } from "$lib/state/modal.svelte";
+    import { onMount, tick } from "svelte";
+    import { connection } from "$lib/hub";
+    
 
-  const { selectedContact }: {selectedContact: Contact | null} = $props();
+    const { selectedContact }: {selectedContact: Contact | null} = $props();
 
-  let currentMessage = $state('');
+    let currentMessage = $state('');
 
-  function getMessagePosition(index: number): "single" | "first" | "middle" | "last" {
-    if(!selectedContact) 
-        throw Error("No selected contact", {
-        cause: "getMessagePosition",
-    });
+    function autoresize(node: HTMLTextAreaElement) {
+        const resize =() => {
+            node.style.height ='auto';
+            node.style.height = node.scrollHeight + 'px';
+        }
 
-    if(selectedContact?.messages.length === 1) 
+        tick().then(resize);
+
+        node.addEventListener('input', resize);
+
+        return {
+            update: resize,
+            destroy: () => node.removeEventListener('input', resize)
+        }
+    }
+
+    function getMessagePosition(index: number): "single" | "first" | "middle" | "last" {
+        if(!selectedContact) 
+            throw Error("No selected contact", {
+            cause: "getMessagePosition",
+        });
+
+        if(selectedContact?.messages.length === 1) 
+            return "single";
+
+        const curr = selectedContact.messages[index];
+        const prev = selectedContact.messages[index - 1];
+        const next = selectedContact.messages[index + 1];
+
+        const sameAsPrev: boolean = prev?.sender === curr.sender;
+        const sameAsNext: boolean = next?.sender === curr.sender;
+
+        if(sameAsPrev && sameAsNext) return "middle";
+        if(sameAsPrev) return "last";
+        if(sameAsNext) return "first";
         return "single";
+    }
 
-    const curr = selectedContact.messages[index];
-    const prev = selectedContact.messages[index - 1];
-    const next = selectedContact.messages[index + 1];
+    async function handleSubmit() {
+        if(currentMessage.trim() === '') return;
+        selectedContact?.addTextMessage(currentMessage, true);
+        currentMessage = '';
+        await tick()
+    }
 
-    const sameAsPrev: boolean = prev?.sender === curr.sender;
-    const sameAsNext: boolean = next?.sender === curr.sender;
-
-    if(sameAsPrev && sameAsNext) return "middle";
-    if(sameAsPrev) return "last";
-    if(sameAsNext) return "first";
-    return "single";
-  }
-
-  function handleSubmit() {
-    if(currentMessage.trim() === '') return;
-    selectedContact?.addTextMessage(currentMessage, true);
-    currentMessage = '';
-  }
 </script>
 
 <main 
@@ -81,10 +102,13 @@
     <!-- chat footer -->
         <div class="dark:bg-dark-secondary bg-primary border-2 border-l-0 flex items-center p-2 pl-4 pr-4 border-primary dark:border-dark-primary">
             <Paperclip size={25} class="text-sidebar"/>
-            <input 
-            onkeydown={(e) => e.key === "Enter" && handleSubmit()}
-            class="border-none outline-none bg-transparent flex-1 focus:ring-0"  
-            placeholder="Write a message..." bind:value={currentMessage}/>
+            <textarea 
+            use:autoresize
+            maxlength="1000"
+            onkeydown={async (e) => e.key === "Enter" && await handleSubmit()}
+            class="border-none outline-none bg-transparent w-full focus:ring-0 max-h-[120px] 
+                  overflow-y-auto resize-none text-left  dark:text-primary text-dark-primary px-3" 
+            placeholder="Write a message..." bind:value={currentMessage}></textarea>
         </div>
     {:else}
         <div class="px-3 py-1 text-sm rounded-xl h-min items-center justify-center bg-dark-primary dark:bg-[#1e2c3a] text-white">
