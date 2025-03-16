@@ -45,9 +45,9 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", p =>
     {
-        p.WithOrigins("http://localhost:5180")
-        .AllowAnyHeader()
+        p.WithOrigins("http://localhost:5173", "http://localhost:5180")
         .AllowAnyMethod()
+        .AllowAnyHeader()
         .AllowCredentials();
     });
 });
@@ -83,6 +83,7 @@ builder.Services.AddAuthentication(authenticationOptions =>
         OnAuthenticationFailed = context =>
         {
             Console.WriteLine("Authentication failed: " + context.Exception.Message);
+            context.Response.StatusCode = 401;
             return Task.CompletedTask;
         },
         OnTokenValidated = context =>
@@ -105,8 +106,6 @@ builder.Services.AddAuthorization(options =>
         policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
         policy.RequireAuthenticatedUser();
     });
-    
-    
 });
 
 var app = builder.Build();
@@ -117,8 +116,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-app.UseHttpsRedirection();
+if(app.Environment.IsProduction()) {
+    app.UseHttpsRedirection();
+}
 app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();

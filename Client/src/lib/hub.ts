@@ -2,9 +2,10 @@ import { HubConnectionBuilder, LogLevel, HttpTransportType } from '@microsoft/si
 import { contacts } from './state/chat.svelte';
 
 export const connection = new HubConnectionBuilder()
-.withUrl(`http://localhost:5180/chat`, {
+.withUrl("http://localhost:5180/chat", {
     skipNegotiation: true,
-    transport: HttpTransportType.WebSockets
+    transport: HttpTransportType.WebSockets,
+    withCredentials: true,
 })
 .withAutomaticReconnect()
 .configureLogging(LogLevel.Debug)
@@ -18,6 +19,15 @@ connection.on("Typing", (user: string) => {
 connection.on("UserConnected", (connectionId: string) => {
     console.log("User connected: ", connectionId);
 })
+
+export async function init() {
+    try {
+        console.log(connection.state);
+        await connection.start();
+    } catch(err) {
+        console.log(err)
+    }
+}
 
 
 /* Client methods */
