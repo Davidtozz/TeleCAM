@@ -1,4 +1,11 @@
-import { faker, fakerIT } from "@faker-js/faker";
+let faker: any;
+let fakerIT: any;
+
+if(import.meta.env.DEV) {
+    const importedFaker = await import('@faker-js/faker');
+    faker = importedFaker.faker;
+    fakerIT = importedFaker.fakerIT;
+}
 
 export class Message {
     public text = $state<string>('');
@@ -22,6 +29,9 @@ export class Message {
     }
 
     static fromFakeData(sender: Contact | "me") {
+        if(import.meta.env.PROD || !fakerIT) {   
+            return new Message(crypto.randomUUID(), sender);
+        }
         return new Message(fakerIT.lorem.sentence(), sender);
     }
 }
@@ -60,12 +70,19 @@ export class Contact {
     }
 
     static fromFakeData() {
-        const name = fakerIT.person.fullName();
-        const contact = new Contact(name);
-        contact.status = faker.helpers.arrayElement(['online', 'offline', 'away']);
-        for (let i = 0; i < Math.random() * 10; i++) {
-            contact.addMessage(Message.fromFakeData(contact));
+        if(import.meta.env.PROD || !fakerIT || !faker) {
+            const contact = new Contact("Sample contact");
+            contact.status = "online";
+            contact.addMessage(new Message("Hello", contact));
+            return contact
+        } else {
+            const name = fakerIT.person.fullName();
+            const contact = new Contact(name);
+            contact.status = faker.helpers.arrayElement(['online', 'offline', 'away']);
+            for (let i = 0; i < Math.random() * 10; i++) {
+                contact.addMessage(Message.fromFakeData(contact));
+            }
+            return contact;
         }
-        return contact;
     }
 }
