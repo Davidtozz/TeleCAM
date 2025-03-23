@@ -22,32 +22,41 @@ public sealed class ContactService : IContactService
 
     public async Task AddContactAsync(User user, NewContactDto contact)
     {
+        var targetUser = await _context.Users
+            .Where(u => u.Username == contact.Username)
+            .FirstOrDefaultAsync();
+
         await _context.Contacts.AddAsync(new Contact
         {
             Name = contact.Name,
-            User = user
+            User = user,
+            TargetUser = targetUser
         });
-        await _context.SaveChangesAsync();    
+        await _context.SaveChangesAsync();
     }
 
     public async Task<Contact?> GetContactByIdAsync(Guid userId, Guid contactId)
     {
         return await _context.Contacts
-            .Where(c => c.Id == contactId && c.User.Id == userId)
-            .Select(c => new Contact
-            {
-                Id = c.Id,
-                Name = c.Name,
-                User = c.User
-            })
+            .Where(c => c.Id == contactId)
+            .Where(c => c.User.Id == userId)
+            .Include(c => c.User.Contacts)
             .FirstOrDefaultAsync();
     }
 
     public async Task<ICollection<Contact>> GetContactsByUsernameAsync(string username)
     {
-        return await _context.Contacts
-            .Where(c => c.User.Username == username)
-            .ToArrayAsync();
+        try 
+        {
+            return await _context.Contacts
+                .Where(c => c.User.Username == username)
+                .ToArrayAsync();
+        } 
+        catch (ArgumentNullException e) 
+        {
+            _logger.LogError(e, "Error getting contacts by username");
+            return Array.Empty<Contact>();
+        }
     }
 }
 

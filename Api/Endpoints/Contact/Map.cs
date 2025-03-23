@@ -14,10 +14,8 @@ public partial class ContactEndpoint : IEndpoint
     public void Map(WebApplication app)
     {
         var group = app.MapGroup("/contacts");
-        group.MapGet("/{id}", GetContact);
+        group.MapGet("/{id}", GetContactById);
         group.MapGet("/all", GetAllContacts);
         group.MapPost("/new", NewContact);
     }
-
-
 }

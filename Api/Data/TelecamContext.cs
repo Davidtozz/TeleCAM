@@ -18,11 +18,24 @@ public class TelecamContext : DbContext
         modelBuilder.Entity<Message>().ToTable("Messages");
         modelBuilder.Entity<RefreshToken>().ToTable("RefreshTokens");
 
+        modelBuilder.Entity<Contact>()
+            .HasOne(c => c.User)
+            .WithMany(u => u.Contacts)
+            .HasForeignKey("UserId")
+            .OnDelete(DeleteBehavior.Cascade)
+            .IsRequired();
+
+        modelBuilder.Entity<Contact>()
+            .HasOne(c => c.TargetUser)
+            .WithMany()  // No navigation property on User side
+            .HasForeignKey("TargetUserId")
+            .OnDelete(DeleteBehavior.SetNull)
+            .IsRequired(false);
+
         base.OnModelCreating(modelBuilder);
     }
     public DbSet<User> Users { get; set; }
     public DbSet<Contact> Contacts { get; set; }
     public DbSet<Message> Messages { get; set; }
     public DbSet<RefreshToken> RefreshTokens { get; set; }
-    
 }

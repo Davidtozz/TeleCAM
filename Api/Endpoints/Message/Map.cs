@@ -7,7 +7,7 @@ public sealed partial class MessageEndpoint : IEndpoint
     {
         var group = app.MapGroup("/messages");
         group.MapPost("/send", SendMessage);
-        group.MapGet("/history/{contactId}", GetMessageHistory);
+        group.MapGet("/history/{recipientId}", GetMessageHistory);
         group.MapGet("/genrandom/{count}", GenerateRandomMessages);
     }
 }

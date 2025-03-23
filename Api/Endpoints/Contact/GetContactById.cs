@@ -10,7 +10,7 @@ using Api.Data;
 public partial class ContactEndpoint
 {
     [Authorize("user")]
-    private async Task<IResult> GetContact(
+    private async Task<IResult> GetContactById(
         [FromRoute] Guid id,
         IContactService contactService,
         ClaimsPrincipal user

@@ -9,16 +9,17 @@ using Microsoft.AspNetCore.Authorization;
 public sealed partial class MessageEndpoint
 {
     [Authorize("user")]
-    public async Task<ICollection<Message>>? GetMessageHistory(
-        [FromRoute] Guid contactId,
+    public async Task<IResult> GetMessageHistory(
+        [FromRoute] Guid recipientId,
         IMessageService messageService,
         ClaimsPrincipal jwt)
     {
         Guid userId = Guid.Parse(jwt.FindFirstValue("userId")!);
 
-        return await messageService.GetMessageHistoryAsync(
+        var messages =  await messageService.GetMessageHistoryAsync(
             userId,
-            contactId
+            recipientId
         );
+        return Results.Ok(messages);
     }
 }
