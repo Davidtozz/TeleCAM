@@ -13,7 +13,7 @@ public partial class ContactEndpoint
     private async Task<IResult> NewContact(
         [FromBody] NewContactDto formData,
         IContactService contactService,
-        IUserService<User> userService,
+        IUserService userService,
         ILogger<ContactEndpoint> logger,
         ClaimsPrincipal jwt)
     {          

@@ -9,11 +9,11 @@ using System.Security.Claims;
 
 public sealed class ContactService : IContactService
 {
-    private readonly IUserService<User> _userService;
+    private readonly IUserService _userService;
     private readonly TelecamContext _context;
     private readonly ILogger<ContactService> _logger;
 
-    public ContactService(IUserService<User> userService, TelecamContext context, ILogger<ContactService> logger)
+    public ContactService(IUserService userService, TelecamContext context, ILogger<ContactService> logger)
     {
         _userService = userService;
         _context = context;

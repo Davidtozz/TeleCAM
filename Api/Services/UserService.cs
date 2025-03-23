@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Api.Data;
 using Domain.Entities;
 
-public sealed class UserService : IUserService<User>
+public sealed class UserService : IUserService
 {
     private readonly TelecamContext _context;
 
@@ -69,10 +69,10 @@ public sealed class UserService : IUserService<User>
 
 
 
-public interface IUserService<TUser> where TUser : class
+public interface IUserService
 {
-    Task<TUser?> GetUserByIdAsync(Guid id);
-    Task<TUser?> GetUserByUsernameAsync(string username);
+    Task<User?> GetUserByIdAsync(Guid id);
+    Task<User?> GetUserByUsernameAsync(string username);
     Task<bool> DeleteUserAsync(Guid id);
     Task<User?> CreateUserAsync(User user);
 }

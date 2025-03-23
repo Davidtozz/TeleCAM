@@ -13,13 +13,13 @@ using Microsoft.IdentityModel.Tokens;
 
 public sealed class AuthService : IAuthService
 {
-    private readonly IUserService<User> _userService;
+    private readonly IUserService _userService;
     private readonly IPasswordHasher<User> _passwordHasher;
     private readonly ITokenService _tokenService;
     private readonly IConfiguration _configuration;
 
     public AuthService(
-        IUserService<User> userService, 
+        IUserService userService, 
         IPasswordHasher<User> passwordHasher, 
         ITokenService tokenService,
         IConfiguration configuration)

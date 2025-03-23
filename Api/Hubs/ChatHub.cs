@@ -10,10 +10,10 @@ namespace Api.Hubs;
 [Authorize("user")]
 public class ChatHub : Hub<IChatClient>
 {
-    private readonly IUserService<User> _userService;
+    private readonly IUserService _userService;
     private readonly IContactService _contactService;
 
-    public ChatHub(IUserService<User> userService, IContactService contactService)
+    public ChatHub(IUserService userService, IContactService contactService)
     {
         _userService = userService;
         _contactService = contactService;

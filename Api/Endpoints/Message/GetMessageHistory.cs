@@ -12,6 +12,7 @@ public sealed partial class MessageEndpoint
     public async Task<IResult> GetMessageHistory(
         [FromRoute] Guid recipientId,
         IMessageService messageService,
+        IUserService userService,
         ClaimsPrincipal jwt)
     {
         Guid userId = Guid.Parse(jwt.FindFirstValue("userId")!);

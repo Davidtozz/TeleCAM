@@ -14,7 +14,7 @@ public partial class UserEndpoint
     [Authorize("user")]
     private async Task<IResult>  GetUser(
         [FromRoute] Guid id, 
-        IUserService<User> userService
+        IUserService userService
         )
     {
         User? user = await userService.GetUserByIdAsync(id);

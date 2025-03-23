@@ -13,7 +13,7 @@ public sealed partial class MessageEndpoint
     public async Task<IResult> SendMessage(
         [FromBody] SendMessageDto formData,
         IMessageService messageService,
-        IUserService<User> userService,
+        IUserService userService,
         IContactService contactService,
         ClaimsPrincipal jwt)
     {
