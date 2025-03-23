@@ -50,6 +50,7 @@ public sealed class ContactService : IContactService
         {
             return await _context.Contacts
                 .Where(c => c.User.Username == username)
+                .Include(c => c.TargetUser)
                 .ToArrayAsync();
         } 
         catch (ArgumentNullException e) 
